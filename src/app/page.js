@@ -27,6 +27,31 @@ const UsersPage = () => {
     setLoading(false);
   };
 
+  // Function to trigger cron job API
+  const triggerCronJob = async () => {
+    try {
+      const response = await axios.get('/api/cron');
+      console.log('Cron job triggered:', response.data);
+    } catch (err) {
+      console.error('Failed to trigger cron job:', err);
+    }
+  };
+
+  // Call fetchUsers whenever filters or page changes
+  useEffect(() => {
+    fetchUsers();
+  }, [filters, page]);
+
+  // Set up interval to call the cron job API every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      triggerCronJob();
+    }, 5 * 60 * 1000); // 5 minutes
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     fetchUsers();
   }, [filters, page]);
